@@ -1,12 +1,20 @@
-language: csharp
-mono: none
-dotnet: 7.0
+os: windows
+language: shell
+dotnet: 8.0
 services:
   - docker
 
+before_install:
+  - powershell -Command "choco install dotnet-sdk --version=8.0.100 -y --no-progress"
+  - powershell -Command "$runtimeUrl = 'https://dotnet.microsoft.com/download/dotnet/thank-you/runtime-aspnetcore-8.0.0-windows-hosting-bundle-installer'"
+  - powershell -Command "$output = 'aspnetcore-runtime-installer.exe'"
+  - powershell -Command "Invoke-WebRequest -Uri $runtimeUrl -OutFile $output"
+  - powershell -Command "Start-Process -FilePath .\$output -ArgumentList '/quiet', '/norestart' -Wait"
+  - powershell -Command "Remove-Item .\$output"
+
 before_script:
-  - dotnet restore
+  - powershell -Command "dotnet restore"
 
 script:
-  - dotnet build --configuration Debug
-  - dotnet test HelloWorld.Tests/HelloWorld.Tests.csproj --nologo --results-directory:test_coverage --collect:"Code Coverage" --verbosity normal
+  - powershell -Command "dotnet build --configuration Debug"
+  - powershell -Command "dotnet test HelloWorld.Tests/HelloWorld.Tests.csproj --nologo --results-directory:test_coverage --collect:'Code Coverage' --verbosity normal"
