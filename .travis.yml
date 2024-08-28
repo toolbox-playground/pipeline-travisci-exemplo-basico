@@ -1,0 +1,12 @@
+language: csharp
+mono: none
+dotnet: 7.0
+services:
+  - docker
+
+before_script:
+  - dotnet restore
+
+script:
+  - dotnet build --configuration Debug
+  - dotnet test HelloWorld.Tests/HelloWorld.Tests.csproj --nologo --results-directory:test_coverage --collect:"Code Coverage" --verbosity normal
